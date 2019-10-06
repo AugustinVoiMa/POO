@@ -3,7 +3,7 @@ package api;
 import java.util.HashMap;
 
 public abstract class State<T> {
-	public final double ta;
+	public double ta;
 	
 	public final String name;
 	

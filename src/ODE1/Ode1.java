@@ -29,10 +29,12 @@ public class Ode1 extends Scheduler<Double> {
 	private HashMap<String, Double> nextmessages;
 	private Object last_trace;
 	private ChartFrame cf;
-	private Integrateur integrateur;
 	private Port<Double> portI;
 	private Chart chartsomme;
-	private Chart chartxdt;
+	private IntegrateurTDiscret integrateurTD;
+	private IntegrateurTDiscret integrateurED;
+	private Chart chartxdttd;
+	private Chart chartxdted;
 
 	protected Ode1() {
 		super(2);
@@ -43,14 +45,16 @@ public class Ode1 extends Scheduler<Double> {
 		
 		this.adder = new Adder();
 
-		this.integrateur = new Integrateur(.1);
-		
+		this.integrateurTD = new IntegrateurTDiscret(.1);
+				this.integrateurED = new IntegrateurTDiscret(.1);
+
 		super.C.add(step1);
 		super.C.add(step2);
 		super.C.add(step3);
 		super.C.add(step4);
 		super.C.add(adder);
-		super.C.add(integrateur);
+		super.C.add(integrateurTD);
+		super.C.add(integrateurED);
 		
 		this.port1 = new Port<Double>("x1");
 		port1.addAtomicListener(adder);
@@ -70,7 +74,8 @@ public class Ode1 extends Scheduler<Double> {
 		step4.addPort(port4);
 		
 		this.portI = new Port<Double>("x");
-		portI.addAtomicListener(integrateur);
+		portI.addAtomicListener(integrateurTD);
+		portI.addAtomicListener(integrateurED);
 		adder.addPort(portI);
 		
 		this.nextmessages = new HashMap<String, Double>();
@@ -78,9 +83,11 @@ public class Ode1 extends Scheduler<Double> {
 		
 		this.cf = new ChartFrame("Ode1", "Evolution de la somme");
 		this.chartsomme = new Chart("somme");
-		this.chartxdt = new Chart("/x dt");
+		this.chartxdttd = new Chart("/x dt (temps discret)");
+		this.chartxdted = new Chart("/x dt (événement discret)");
 		cf.addToLineChartPane(chartsomme);
-		cf.addToLineChartPane(chartxdt);
+		cf.addToLineChartPane(chartxdttd);
+		cf.addToLineChartPane(chartxdted);
 		
 
 	}
@@ -126,10 +133,14 @@ public class Ode1 extends Scheduler<Double> {
 		if(y != null)
 			chartsomme.addDataToSeries(super.t-trmin, y);
 		
-		Double xdt = this.integrateur.popY("/x dt");
-		if(xdt != null)
-			chartxdt.addDataToSeries(super.t-trmin, xdt);
-		
+		Double xdttd = this.integrateurTD.popY("/x dt");
+		if(xdttd != null)
+			chartxdttd.addDataToSeries(super.t-trmin, xdttd);
+
+		Double xdted = this.integrateurED.popY("/x dt");
+		if(xdted != null)
+			chartxdted.addDataToSeries(super.t-trmin, xdted);
+
 	}
 
 	@Override
