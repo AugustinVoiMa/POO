@@ -63,10 +63,10 @@ public abstract class Scheduler<T> implements Runnable {
 			 * while on tp paper is not specified 
 			 */
 			trmin = this.C.stream()
-					//.filter(a-> a.getTr() > 0)
 					.min((a,b)-> (Double.compare(a.getTr(), b.getTr()))) // min tr
 					.get().getTr() - ftrmin; // get tr val
-			
+
+			trmin = trmin>0 ? trmin : 0;
 			
 			/*
 			 * performing lambda on imminent components

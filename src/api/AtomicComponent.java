@@ -62,6 +62,7 @@ public abstract class AtomicComponent<T>{
 		/*
 		 * tl, tn fixed on state change
 		 */
+		this.tn = this.tl + s.ta;
 		this.tr = this.tn - t;		
 		this.e =  t - this.tl;
 		
@@ -82,7 +83,6 @@ public abstract class AtomicComponent<T>{
 		if (nstate != null) {
 			this.s = nstate;
 			this.tl = t;
-			this.tn = t+nstate.ta;
 			update_time(t);
 		}
 	}
@@ -93,7 +93,6 @@ public abstract class AtomicComponent<T>{
 			if (nstate != null) {
 				this.s = nstate;
 				this.tl = t;
-				this.tn = t+nstate.ta;
 				update_time(t);
 			} else {
 				throw new Exception("Null state returned on timeout");
