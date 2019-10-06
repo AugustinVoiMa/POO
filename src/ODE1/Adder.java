@@ -16,7 +16,7 @@ public class Adder extends AtomicComponent<Double> {
 	}
 
 	private void output() {
-		Y.put("somme", somme);
+		Y.put("x", somme);
 	}
 	@Override
 	protected State<Double> generateInitialState() {
@@ -30,10 +30,7 @@ public class Adder extends AtomicComponent<Double> {
 		}
 
 		@Override
-		public void lambda() {
-			super.key="somme";
-			super.value=somme;
-		}
+		public void lambda() {}
 
 		@Override
 		public State<Double> timeout() {
@@ -53,7 +50,7 @@ public class Adder extends AtomicComponent<Double> {
 
 		@Override
 		public String getTimeoutMessage() {
-			return null;
+			return "x";
 		}
 		
 	}

@@ -111,6 +111,15 @@ public abstract class AtomicComponent<T>{
 			return null;
 	}
 	
+	public T getY(String key) {
+		if(this.Y.containsKey(key)) {
+			T msg = this.Y.get(key);			
+			return msg;
+		}
+		else
+			return null;
+	}
+	
 	public void input(String key, T value) throws Exception {
 		if (this.X.containsKey(key) || this.X.get(key) != null)
 			throw new Exception("Trying to overwrite an input value "+this.name+"("+this.s.name+"):"+key);

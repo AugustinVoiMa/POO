@@ -29,10 +29,13 @@ public class Ode1 extends Scheduler<Double> {
 	private HashMap<String, Double> nextmessages;
 	private Object last_trace;
 	private ChartFrame cf;
-	private Chart chart;
+	private Integrateur integrateur;
+	private Port<Double> portI;
+	private Chart chartsomme;
+	private Chart chartxdt;
 
 	protected Ode1() {
-		super(10);
+		super(2);
 		this.step1 = new Step(1, 1, -3, .65);
 		this.step2 = new Step(2, 0, 1, .35);
 		this.step3 = new Step(3, 0, 1, 1);
@@ -40,11 +43,14 @@ public class Ode1 extends Scheduler<Double> {
 		
 		this.adder = new Adder();
 
+		this.integrateur = new Integrateur(.1);
+		
 		super.C.add(step1);
 		super.C.add(step2);
 		super.C.add(step3);
 		super.C.add(step4);
 		super.C.add(adder);
+		super.C.add(integrateur);
 		
 		this.port1 = new Port<Double>("x1");
 		port1.addAtomicListener(adder);
@@ -63,12 +69,18 @@ public class Ode1 extends Scheduler<Double> {
 		port4.addAtomicListener(adder);
 		step4.addPort(port4);
 		
+		this.portI = new Port<Double>("x");
+		portI.addAtomicListener(integrateur);
+		adder.addPort(portI);
+		
 		this.nextmessages = new HashMap<String, Double>();
 		
 		
 		this.cf = new ChartFrame("Ode1", "Evolution de la somme");
-		this.chart = new Chart("somme");
-		cf.addToLineChartPane(chart);
+		this.chartsomme = new Chart("somme");
+		this.chartxdt = new Chart("/x dt");
+		cf.addToLineChartPane(chartsomme);
+		cf.addToLineChartPane(chartxdt);
 		
 
 	}
@@ -110,9 +122,14 @@ public class Ode1 extends Scheduler<Double> {
 			System.out.println(_trace);
 		this.last_trace = _trace;
 		
-		Double y = this.adder.somme;
+		Double y = this.adder.getY("x");
 		if(y != null)
-			chart.addDataToSeries(super.t-trmin, y);
+			chartsomme.addDataToSeries(super.t-trmin, y);
+		
+		Double xdt = this.integrateur.popY("/x dt");
+		if(xdt != null)
+			chartxdt.addDataToSeries(super.t-trmin, xdt);
+		
 	}
 
 	@Override
