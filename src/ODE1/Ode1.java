@@ -110,7 +110,9 @@ public class Ode1 extends Scheduler<Double> {
 			System.out.println(_trace);
 		this.last_trace = _trace;
 		
-		chart.addDataToSeries(super.t-trmin, adder.somme);
+		Double y = this.adder.somme;
+		if(y != null)
+			chart.addDataToSeries(super.t-trmin, y);
 	}
 
 	@Override

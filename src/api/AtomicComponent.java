@@ -9,7 +9,8 @@ public abstract class AtomicComponent<T>{
 	public boolean ins;
 	
 	private State<T>  s;
-	private HashMap<String, T> X, Y;
+	private HashMap<String, T> X;
+	protected HashMap<String, T> Y;
 	private Set<Port<T>> ports;
 	
 	

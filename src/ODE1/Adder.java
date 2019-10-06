@@ -8,13 +8,16 @@ import api.State;
 
 public class Adder extends AtomicComponent<Double> {
 
-	public double somme;
+	double somme;
 	
 	public Adder() {
 		super("Adder");
 		this.somme = 0;
 	}
 
+	private void output() {
+		Y.put("somme", somme);
+	}
 	@Override
 	protected State<Double> generateInitialState() {
 		return new AdderState_a();
@@ -27,7 +30,10 @@ public class Adder extends AtomicComponent<Double> {
 		}
 
 		@Override
-		public void lambda() {}
+		public void lambda() {
+			super.key="somme";
+			super.value=somme;
+		}
 
 		@Override
 		public State<Double> timeout() {
@@ -37,9 +43,11 @@ public class Adder extends AtomicComponent<Double> {
 		@Override
 		public State<Double> input(HashMap<String, Double> X) {
 			for (Entry<String, Double> e: X.entrySet()) {
-				somme += e.getValue();
+				somme += e.getValue();				
 			}
+			
 			X.clear();
+			output();
 			return null;
 		}
 
