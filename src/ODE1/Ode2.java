@@ -12,7 +12,7 @@ import chart.ChartFrame;
 public class Ode2 extends Scheduler<Double> {
 
 	public static void main(String[] args) {
-		new Ode2(.01).run();
+		new Ode2(5).run();
 	}
 
 
@@ -22,16 +22,14 @@ public class Ode2 extends Scheduler<Double> {
 	private Chart chart_h;
 	private HashMap<String, Double> nextmessages;
 	private String last_trace;
-	private Chart chart_v;
-	private String imms_str;
 
 	
 	protected Ode2(double tend) {
 		super(tend);
 		
 		this.g = new Constante(-9.81, "g");
-		this.v = new IntegrateurEDiscret(-.1, 0, "g", "v");
-		this.h = new IntegrateurEDiscret(-.1, 10, "v", "h");
+		this.v = new IntegrateurEDiscret(-0.1, 0, "g", "v");
+		this.h = new IntegrateurEDiscret(-.01, 10, "v", "h");
 		
 		Port<Double> pg = new Port<Double>("g");
 		pg.addAtomicListener(v);
@@ -48,10 +46,7 @@ public class Ode2 extends Scheduler<Double> {
 		ChartFrame cf = new ChartFrame("Ode2", "gravité");
 		this.chart_h = new Chart("hauteur");
 		cf.addToLineChartPane(chart_h);
-		
-		this.chart_v = new Chart("vitesse");
-		cf.addToLineChartPane(chart_v);
-		
+			
 		this.nextmessages = new HashMap<String, Double>();
 
 	}
@@ -72,9 +67,6 @@ public class Ode2 extends Scheduler<Double> {
 
 	@Override
 	protected void trace_pre_updates() {
-		this.imms_str = "";
-		for(AtomicComponent<Double> c : super.imms)
-			this.imms_str += c.name+"("+c.getStateName()+"); ";
 	}
 
 
@@ -113,14 +105,7 @@ public class Ode2 extends Scheduler<Double> {
 			this.chart_h.addDataToSeries(super.t - trmin, y);		
 		
 
-		Double vy = this.v.popY("v");
-		if (vy != null)
-			this.chart_v.addDataToSeries(super.t - trmin, vy);		
-		
 		System.out.println("v.tr="+this.v.getTr());
-		
-		System.out.println("Imminents: "+imms_str);
-
 	}
 
 

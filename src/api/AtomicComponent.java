@@ -122,6 +122,7 @@ public abstract class AtomicComponent<T>{
 	public void input(String key, T value) throws Exception {
 		if (this.X.containsKey(key) || this.X.get(key) != null)
 			throw new Exception("Trying to overwrite an input value "+this.name+"("+this.s.name+"):"+key);
+			
 		this.X.put(key, value);
 	}	
 	

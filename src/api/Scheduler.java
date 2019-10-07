@@ -111,7 +111,6 @@ public abstract class Scheduler<T> implements Runnable {
 						 * should not be waiting for an input
 						 * => choosing to execute external method anyway 
 						 */
-						System.err.println("conflict");
 						c.external(ft);						
 					}else {
 						/* 

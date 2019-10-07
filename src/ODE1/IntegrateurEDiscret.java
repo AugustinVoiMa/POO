@@ -52,7 +52,13 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 
 		@Override
 		public State<Double> input(HashMap<String, Double> X) {			
-			return null;
+			if(!X.containsKey(nomentrée))
+				return null;
+
+			//else						
+			State<Double> s = new StateIntED(Double.POSITIVE_INFINITY, offset, dQ);
+			s.input(X);
+			return s;
 		}
 
 		@Override
