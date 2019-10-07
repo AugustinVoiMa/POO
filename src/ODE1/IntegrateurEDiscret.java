@@ -30,16 +30,47 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 
 	@Override
 	protected State<Double> generateInitialState() {
-		return new StateIntED(Double.POSITIVE_INFINITY, offset);
+		return new InitialState();
+	}
+	
+	public class InitialState extends State<Double>{
+
+		public InitialState() {
+			super(0, "EDI_initial");
+		}
+
+		@Override
+		public void lambda() {
+			super.key=nomsortie;
+			super.value=offset;
+		}
+
+		@Override
+		public State<Double> timeout() {
+			return new StateIntED(Double.POSITIVE_INFINITY, offset, dQ);
+		}
+
+		@Override
+		public State<Double> input(HashMap<String, Double> X) {			
+			return null;
+		}
+
+		@Override
+		public String getTimeoutMessage() {
+			return nomsortie;
+		}
+		
 	}
 	
 	public class StateIntED extends State<Double>{
 
 		private double y;
+		private double dQ;
 		
-		public StateIntED(double tstep, double y) {
+		public StateIntED(double tstep, double y, double dQ) {
 			super(tstep, "état événement discret");
-			this.y = y;
+			this.y = y + dQ;
+			this.dQ = dQ;
 		}
 
 		@Override
@@ -50,8 +81,7 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 
 		@Override
 		public State<Double> timeout() {
-			System.out.println("IED timeout y="+(y+dQ));
-			return new StateIntED(ta, y+dQ);
+			return new StateIntED(ta, y, dQ);
 		}
 
 		@Override
@@ -60,9 +90,15 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 				
 				double x = X.get(nomentrée);
 				
-				super.ta = dQ / x;
-				assert(super.ta > 0);
-				System.out.println("IED << "+x+"; ta="+ta);
+				// if x and dQ not the same sign, change dQ to opposite				
+				if (x * this.dQ < 0) 
+					this.dQ *= -1;
+				
+				super.ta = dQ / x;			
+				if (super.ta == Double.NEGATIVE_INFINITY)
+					ta *= -1;
+				if (super.ta < 0)
+					System.err.println("ta < 0: "+ta+" with x="+x);
 				X.clear();
 			}
 			return null;

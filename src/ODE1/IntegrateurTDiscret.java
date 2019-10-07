@@ -16,23 +16,23 @@ public class IntegrateurTDiscret extends AtomicComponent<Double> {
 
 	@Override
 	protected State<Double> generateInitialState() {
-		return new IntState(hstep);
+		return  new IntState(hstep);
 	}
 	
 	public class IntState extends State<Double>{
 		
 		private final double y;
-		private final double d;
+		private double d;
 		
 		public IntState(double hstep) {
 			super(hstep, "intégrateur");
 			y=0;
-			d = 0;
+			d = 0;			
 		}
 		
 		public IntState(double hstep, double y, double d) {
 			super(hstep, "intégrateur");
-			this.y=y;
+			this.y=y+ (d*hstep);
 			this.d = d;
 		}
 
@@ -44,7 +44,7 @@ public class IntegrateurTDiscret extends AtomicComponent<Double> {
 
 		@Override
 		public State<Double> timeout() {						
-			return new IntState(this.ta, y+d, d);
+			return new IntState(this.ta, y, d);
 		}
 
 		@Override
@@ -52,7 +52,8 @@ public class IntegrateurTDiscret extends AtomicComponent<Double> {
 			if (X.containsKey("x") && X.get("x") != null) {
 				double d2 = X.get("x");
 				X.clear();
-				return new IntState(this.ta, y+d2, d2);
+				this.d = d2;
+				System.out.println("new d="+d2+"; timeout in "+getTr());
 			}
 			return null;
 		}

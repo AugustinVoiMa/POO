@@ -32,7 +32,7 @@ public class Ode1 extends Scheduler<Double> {
 	private Port<Double> portI;
 	private Chart chartsomme;
 	private IntegrateurTDiscret integrateurTD;
-	private IntegrateurTDiscret integrateurED;
+	private IntegrateurEDiscret integrateurED;
 	private Chart chartxdttd;
 	private Chart chartxdted;
 
@@ -46,7 +46,7 @@ public class Ode1 extends Scheduler<Double> {
 		this.adder = new Adder();
 
 		this.integrateurTD = new IntegrateurTDiscret(.1);
-				this.integrateurED = new IntegrateurTDiscret(.1);
+		this.integrateurED = new IntegrateurEDiscret(.1, 0, "x", "/x dt");
 
 		super.C.add(step1);
 		super.C.add(step2);
@@ -132,11 +132,11 @@ public class Ode1 extends Scheduler<Double> {
 		Double y = this.adder.getY("x");
 		if(y != null)
 			chartsomme.addDataToSeries(super.t-trmin, y);
-		
+
 		Double xdttd = this.integrateurTD.popY("/x dt");
 		if(xdttd != null)
 			chartxdttd.addDataToSeries(super.t-trmin, xdttd);
-
+			
 		Double xdted = this.integrateurED.popY("/x dt");
 		if(xdted != null)
 			chartxdted.addDataToSeries(super.t-trmin, xdted);
