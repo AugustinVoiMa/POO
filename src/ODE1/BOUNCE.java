@@ -9,10 +9,10 @@ import api.Scheduler;
 import chart.Chart;
 import chart.ChartFrame;
 
-public class Ode2 extends Scheduler<Double> {
+public class BOUNCE extends Scheduler<Double> {
 
 	public static void main(String[] args) {
-		new Ode2(15).run();
+		new BOUNCE(40).run();
 	}
 
 
@@ -25,14 +25,16 @@ public class Ode2 extends Scheduler<Double> {
 	private Chart chart_v;
 	private Double vitesse;
 	private Double hauteur;
+	private Double old_v;
+	private Double old_h;
 
 	
-	protected Ode2(double tend) {
+	protected BOUNCE(double tend) {
 		super(tend);
 		
 		this.g = new Constante(-9.81, "g");
-		this.v = new IntegrateurEDiscret(-0.1, 5, "g", "v");
-		this.h = new IntegrateurEDiscret(-.01, 10, "v", "h");
+		this.v = new IntegrateurEDiscret(-.01, 5, "g", "v");
+		this.h = new IntegrateurEDiscret(-.01, 1000, "v", "h", 0d);
 		
 		Port<Double> pg = new Port<Double>("g");
 		pg.addAtomicListener(v);
@@ -60,13 +62,13 @@ public class Ode2 extends Scheduler<Double> {
 	@Override
 	protected void trace_begin_loop() {
 		this.nextméssages.clear();	
-		System.out.println("begin loop, trmin="+trmin);
+//		System.out.println("begin loop, trmin="+trmin);
 	}
 
 
 	@Override
 	protected void trace_transmit_msg(AtomicComponent<Double> c, Port<Double> p, Double msg) {
-		System.out.println("[message] "+p.name+"="+msg);
+//		System.out.println("[message] "+p.name+"="+msg);
 	}
 
 
@@ -101,18 +103,31 @@ public class Ode2 extends Scheduler<Double> {
 			_trace += (e.getKey()+"|"+e.getValue())+"\n";
 				
 		_trace += ("\n");
-		if (!_trace.equals(this.last_trace))
-			System.out.println(_trace);
+//		if (!_trace.equals(this.last_trace))
+//			System.out.println(_trace);
 		this.last_trace = _trace;
 		
 		hauteur = h.popY("h");
-		if (hauteur != null)
-			this.chart_h.addDataToSeries(super.t - trmin, hauteur);		
+		if (hauteur != null){
+			this.chart_h.addDataToSeries(super.t - trmin, hauteur);
+			this.old_h = hauteur;
+		}
 		
-		if (vitesse != null)
-			this.chart_v.addDataToSeries(super.t - trmin, vitesse);		
+		if (vitesse != null){
+			this.chart_v.addDataToSeries(super.t - trmin, vitesse);
+			this.old_v = vitesse;
+		}
+		
+//		System.out.println(hauteur+" ___"+vitesse);
+		if (old_v != null && old_h !=null && old_h <= Double.MIN_VALUE){
+			this.h.forceSetValueCDEGEU(3*Double.MIN_VALUE);
+			this.v.forceSetValueCDEGEU(-.9*old_v);
+//			System.err.println("rebond");
+			old_h=null;
+			old_v=null;
+		}
 
-		System.out.println("v.tr="+this.v.getTr());
+//		System.out.println("v.tr="+this.v.getTr());
 	}
 
 

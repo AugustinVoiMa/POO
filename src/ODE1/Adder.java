@@ -1,5 +1,6 @@
 package ODE1;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -9,10 +10,14 @@ import api.State;
 public class Adder extends AtomicComponent<Double> {
 
 	double somme;
+	private ArrayList<Double> Xvals;
 	
-	public Adder() {
+	public Adder(int nbx) {
 		super("Adder");
 		this.somme = 0;
+		this.Xvals = new ArrayList<Double>();
+		for (int  i= 0; i < nbx; i++)
+			this.Xvals.add(0.d);
 	}
 
 	private void output() {
@@ -40,8 +45,12 @@ public class Adder extends AtomicComponent<Double> {
 		@Override
 		public State<Double> input(HashMap<String, Double> X) {
 			for (Entry<String, Double> e: X.entrySet()) {
-				somme += e.getValue();				
+				int nx = Integer.parseInt(e.getKey().substring(1))-1;
+				Xvals.set(nx,e.getValue());				
 			}
+			somme = 0;
+			
+			Xvals.forEach(v->somme += v);
 			
 			X.clear();
 			output();

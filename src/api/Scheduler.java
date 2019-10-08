@@ -78,7 +78,7 @@ public abstract class Scheduler<T> implements Runnable {
 					e.printStackTrace();
 				}
 			});
-			
+			this.trace_pre_transmit();
 			/*
 			 * transmitting messages through ports
 			 */
@@ -159,6 +159,9 @@ public abstract class Scheduler<T> implements Runnable {
 	}
 
 	
+
+
+	protected abstract void trace_pre_transmit();
 
 
 	/**

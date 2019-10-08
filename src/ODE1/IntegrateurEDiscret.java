@@ -8,9 +8,10 @@ import api.State;
 public class IntegrateurEDiscret extends AtomicComponent<Double> {
 
 	private double dQ;
-	private final String nomsortie;
+	public final String nomsortie;
 	private String nomentrée;
 	private double offset;
+	private Double minimum;
 
 	public IntegrateurEDiscret(double dQ) {
 		super("intégrateur événement discret");
@@ -18,6 +19,7 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 		this.nomsortie = "/x dt";
 		this.nomentrée = "x";
 		this.offset = 0;
+		this.minimum = Double.NEGATIVE_INFINITY;
 	}
 	
 	public IntegrateurEDiscret(double dQ, double offset, String nomentrée, String nomsortie) {
@@ -26,6 +28,20 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 		this.offset = offset;
 		this.nomsortie = nomsortie;
 		this.nomentrée = nomentrée;
+		this.minimum = Double.NEGATIVE_INFINITY;
+	}
+	
+	public IntegrateurEDiscret(double dQ, double offset, String nomentrée, String nomsortie, Double minimum) {
+		super("intégrateur événement discret");
+		this.dQ = dQ;
+		this.offset = offset;
+		this.nomsortie = nomsortie;
+		this.nomentrée = nomentrée;
+		this.minimum = minimum;
+	}
+	
+	public void forceSetValueCDEGEU(Double ma_vals){
+		((StateIntED)this.s).y = ma_vals;
 	}
 
 	@Override
@@ -34,7 +50,9 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 	}
 	
 	public class InitialState extends State<Double>{
-
+		@SuppressWarnings("unused")
+		private double y;
+		
 		public InitialState() {
 			super(0, "EDI_initial");
 		}
@@ -77,6 +95,7 @@ public class IntegrateurEDiscret extends AtomicComponent<Double> {
 			super(tstep, "état événement discret");
 			this.y = y + dQ;
 			this.dQ = dQ;
+			if (y < minimum + Double.MIN_VALUE) this.y=minimum; 
 		}
 
 		@Override

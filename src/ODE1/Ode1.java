@@ -43,10 +43,10 @@ public class Ode1 extends Scheduler<Double> {
 		this.step3 = new Step(3, 0, 1, 1);
 		this.step4 = new Step(4, 0, 4, 1.5);
 		
-		this.adder = new Adder();
+		this.adder = new Adder(4);
 
-		this.integrateurTD = new IntegrateurTDiscret(.1);
-		this.integrateurED = new IntegrateurEDiscret(.1, 0, "x", "/x dt");
+		this.integrateurTD = new IntegrateurTDiscret(.01);
+		this.integrateurED = new IntegrateurEDiscret(.01, 0, "x", "/x dt");
 
 		super.C.add(step1);
 		super.C.add(step2);
@@ -146,5 +146,10 @@ public class Ode1 extends Scheduler<Double> {
 	@Override
 	protected void trace_end_run() {
 		System.out.println("job terminated on time t="+super.t);
+	}
+	
+
+	@Override
+	protected void trace_pre_transmit() {	
 	}
 }

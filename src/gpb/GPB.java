@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import api.AtomicComponent;
 import api.Port;
 import api.Scheduler;
+import chart.Chart;
+import chart.ChartFrame;
 
 public class GPB extends Scheduler<Boolean> {
 	
@@ -22,6 +24,8 @@ public class GPB extends Scheduler<Boolean> {
 
 	@SuppressWarnings("unused")
 	private String imms_str;
+	private ChartFrame cf;
+	private Chart chart;
 	
 	
 	public GPB() {
@@ -30,7 +34,7 @@ public class GPB extends Scheduler<Boolean> {
 		this.nextmessages = new HashMap<String, Double>();
 		
 		this.g = new Generator();
-		this.b = new Buffer("done");
+		this.b = new Buffer("job");
 		this.p = new Processor();
 		
 		Port<Boolean> pjob = new Port<Boolean>("job");
@@ -49,6 +53,12 @@ public class GPB extends Scheduler<Boolean> {
 		super.C.add(g);
 		super.C.add(p);
 		super.C.add(b);		
+		
+		
+
+		this.cf = new ChartFrame("GPB", "Evolution de q");
+		this.chart = new Chart("q");
+		this.cf.addToLineChartPane(chart);
 	}
 	
 	@Override
@@ -84,6 +94,7 @@ public class GPB extends Scheduler<Boolean> {
 		
 		String _trace = "t="+ (super.t - super.trmin)+"\n"; // t already updated
 		_trace += ("q="+ this.b.q )+"\n"; 
+		this.chart.addDataToSeries(super.t - super.trmin, this.b.q);
 		/*
 		 * print future messages
 		 */
@@ -99,6 +110,10 @@ public class GPB extends Scheduler<Boolean> {
 	@Override
 	protected void trace_end_run() {
 		System.out.println("job terminated on time t="+super.t);
+	}
+
+	@Override
+	protected void trace_pre_transmit() {	
 	}
 
 }
